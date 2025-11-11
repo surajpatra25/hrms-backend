@@ -220,6 +220,36 @@ CREATE TABLE hr_policies (
 - **Default Directory:** `./policy-files` (created automatically if it doesn't exist)
 - **Max File Size:** 10MB (configurable)
 
+### Docker Volume Setup
+
+When running in Docker, the policy files are persisted using a Docker volume:
+
+**Docker Compose Configuration:**
+```yaml
+volumes:
+  hrms-policy-files:/app/policy-files
+```
+
+This ensures that policy files are:
+- Persisted across container restarts
+- Not lost when the container is recreated
+- Stored outside the container filesystem
+
+**Volume Management Commands:**
+```bash
+# List volumes
+docker volume ls
+
+# Inspect the policy files volume
+docker volume inspect hrms-backend_hrms-policy-files
+
+# Backup policy files
+docker run --rm -v hrms-backend_hrms-policy-files:/data -v $(pwd):/backup alpine tar czf /backup/policy-files-backup.tar.gz /data
+
+# Restore policy files
+docker run --rm -v hrms-backend_hrms-policy-files:/data -v $(pwd):/backup alpine tar xzf /backup/policy-files-backup.tar.gz -C /
+```
+
 ---
 
 ## Validation Rules
